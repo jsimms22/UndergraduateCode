@@ -1,0 +1,11 @@
+#!/bin/bash
+#SBATCH -A cc3uv3p # 2017 XSEDE Applications of Parallel Computing Course Allocation
+#SBATCH -J particle-mpi16
+#SBATCH -o particle-mpi16.stdout
+#SBATCH -p RM
+#SBATCH -t 00:10:00
+#SBATCH -N 2          
+#SBATCH --ntasks-per-node 28
+
+#run MPI program     
+mpirun -np $SLURM_NTASKS ./mpi -n 1000 -o mpi.txt
