@@ -1,0 +1,22 @@
+
+GPU code is O(N^slope)
+Slope estimates are : 0.694496 0.937659 0.920161 1.054836
+Slope estimate for line fit is: 0.907212
+
+GPU speedup estimates are :
+    0.14    0.22    0.19    0.21    0.21 (speedup)
+Average speedup:    0.19 
+
+
+GPU Total Grade =   40.00
+
+500 0.637192
+1000 1.03118
+2000 1.97514
+4000 3.73761
+8000 7.76482
+500 0.090389
+1000 0.22205
+2000 0.370601
+4000 0.776996
+8000 1.60155
