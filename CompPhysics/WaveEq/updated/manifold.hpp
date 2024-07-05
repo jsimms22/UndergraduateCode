@@ -1,0 +1,65 @@
+#pragma once
+// std library headers
+#include <cmath>
+// project headers
+#include "matrix.hpp"   // uses std::array as container primative
+
+namespace manifold
+{
+    constexpr double rho { 1 };                                 // density of manifold medium
+    constexpr double speed { 343 };                             // speed of wave through medium (speed of sound in air)
+    constexpr double c { speed / rho };                         // speed - density ratio
+    constexpr double radius { 0.25 };                           // radius of manifold
+
+    template <typename UNIT>
+    UNIT wave_eq(const size_t t,                                // time step index
+                 const size_t i, const size_t j,                // spacial step indices
+                 const UNIT dx, const UNIT dy)                  // step size through space
+    {
+        return exp(-((i * dx) * (i * dx) + (j * dy) * (j * dy)) / (radius * radius)) - exp(-1);
+    }
+
+    // initialize position matrix for manifold
+    template <typename UNIT, size_t NX, size_t NY, size_t NT>
+    void init_pos(matrix::Matrix3<UNIT,NX,NY,NT>& pos,          // position matrix
+                  const UNIT dx, const UNIT dy)                 // step size through space
+    {
+        int cx { (NX - 1) / 2 };                                // center of manifold circle
+        int cy { (NY - 1) / 2 };
+
+        size_t i1{}, i2{}, j1{}, j2{};                          // index elements of our quadrants around our center
+        double r{};                                             // Use a comparison radius to initialize a circular manifold
+        // initialize our z matrix
+        for(int i = 0; i <= (cx/2); ++i) {
+            for(int j = 0; j <= (cy/2); ++j) {
+                i1 = i + cx; i2 = -i + cx;                      // index offset from the center in +/- x dir (+/- row index)
+                j1 = j + cy; j2 = -j + cy;                      // index offset from the center in +/- y dir (+/- col index)
+                r = sqrt((i*dx)*(i*dx) + (j*dy)*(j*dy));        // calculate distance from the center
+                // if the point is within our desired circle size
+                if(radius >= r) { 
+                    pos[0][i1][j1] = wave_eq<UNIT>(0,i,j,dx,dy);// top right quad element
+                    pos[0][i1][j2] = wave_eq<UNIT>(0,i,j,dx,dy);// top left quad element
+                    pos[0][i2][j1] = wave_eq<UNIT>(0,i,j,dx,dy);// bottom right quad element
+                    pos[0][i2][j2] = wave_eq<UNIT>(0,i,j,dx,dy);// bottom left quad element
+                }
+            }
+        }
+    }
+
+    template <typename UNIT, size_t NX, size_t NY, size_t NT>
+    // calculate acceleration components for a given time step
+    void accel(const size_t t, 
+               const matrix::Matrix3<UNIT,NX,NY,NT>& pos, 
+               matrix::Matrix2<UNIT,NX,NY>& accel,
+               const UNIT dx, const UNIT dy)
+    {
+        double dx2, dy2;
+        for(int i = 1; i < NX - 1; i++) {
+            for(int j = 1; j < NY -1; j++) {
+                dx2 = (pos[t][i+1][j] - 2 * pos[t][i][j] + pos[t][i-1][j]) / (dx * dx);
+                dy2 = (pos[t][i][j+1] - 2 * pos[t][i][j] + pos[t][i][j-1]) / (dy * dy);
+                accel[i][j] = c * c * (dx2 + dy2);
+            }
+        }
+    }
+} // namespace manifold
