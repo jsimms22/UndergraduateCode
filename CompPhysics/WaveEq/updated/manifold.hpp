@@ -3,6 +3,8 @@
 #include <cmath>
 // project headers
 #include "matrix.hpp"   // uses std::array as container primative
+// 3rd-party libraries
+#include <matplot/matplot.h>
 
 namespace manifold
 {
@@ -21,7 +23,7 @@ namespace manifold
 
     // initialize position matrix for manifold
     template <typename UNIT, size_t NX, size_t NY, size_t NT>
-    void init_pos(matrix::Matrix3<UNIT,NX,NY,NT>& pos,          // position matrix
+    void init_pos(std::unique_ptr<matrix::Matrix3<UNIT,NX,NY,NT>>& pos,          // position matrix
                   const UNIT dx, const UNIT dy)                 // step size through space
     {
         int cx { (NX - 1) / 2 };                                // center of manifold circle
@@ -37,10 +39,10 @@ namespace manifold
                 r = sqrt((i*dx)*(i*dx) + (j*dy)*(j*dy));        // calculate distance from the center
                 // if the point is within our desired circle size
                 if(radius >= r) { 
-                    pos[0][i1][j1] = wave_eq<UNIT>(0,i,j,dx,dy);// top right quad element
-                    pos[0][i1][j2] = wave_eq<UNIT>(0,i,j,dx,dy);// top left quad element
-                    pos[0][i2][j1] = wave_eq<UNIT>(0,i,j,dx,dy);// bottom right quad element
-                    pos[0][i2][j2] = wave_eq<UNIT>(0,i,j,dx,dy);// bottom left quad element
+                    (*pos)[0][i1][j1] = wave_eq<UNIT>(0,i,j,dx,dy); // top right quad element
+                    (*pos)[0][i1][j2] = wave_eq<UNIT>(0,i,j,dx,dy); // top left quad element
+                    (*pos)[0][i2][j1] = wave_eq<UNIT>(0,i,j,dx,dy); // bottom right quad element
+                    (*pos)[0][i2][j2] = wave_eq<UNIT>(0,i,j,dx,dy); // bottom left quad element
                 }
             }
         }
@@ -62,4 +64,27 @@ namespace manifold
             }
         }
     }
+
+    template <typename UNIT, size_t NX, size_t NY, size_t NT>
+    void plot(const std::unique_ptr<matrix::Matrix3<UNIT,NX,NY,NT>>& z_matrix, const double dx, const size_t t_step)
+    {
+        
+        // initialize our mesh grid matrices
+        auto [X,Y] = matplot::meshgrid(matplot::iota(0.0,dx,(1.0+dx)));
+        auto Z = matplot::transform(X, Y, [](double x, double y){ return 0.0; });
+        // std::cout << X.size() << ", " << Y.size() << ", " << Z.size() << '\n';
+        // std::cout << X[0][0] << '\n';
+        for (size_t i = 0; i < NX; ++i) {
+            for (size_t j = 0; j < NY; ++j) {
+                // std::cout << t_step << ", " << i << ", " << j << '\n';
+                // std::cout << Z[i][j] << " = " << (*z_matrix)[t_step][i][j] << '\n';
+                Z[i][j] = (*z_matrix)[t_step][i][j];
+            }
+        }
+        // build meshgrid surface plot
+        matplot::mesh(X, Y, Z);
+        // show last plot configured
+        matplot::show();
+    }
+
 } // namespace manifold

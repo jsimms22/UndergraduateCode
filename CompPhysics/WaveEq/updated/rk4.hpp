@@ -14,15 +14,15 @@ namespace rk4
                        const UNIT dx, const UNIT dy)            // size of spacial step
     {
         // Initialize our accerlation sub-components for rk4 loop
-        auto a0_ptr = std::make_unique<matrix::Matrix2<UNIT,NX,NY>>(); 
+        auto a0_ptr = std::make_unique<matrix::Matrix2<UNIT,NX,NY>>();
         auto a1_ptr = std::make_unique<matrix::Matrix2<UNIT,NX,NY>>();
-        auto a2_ptr = std::make_unique<matrix::Matrix2<UNIT,NX,NY>>(); 
+        auto a2_ptr = std::make_unique<matrix::Matrix2<UNIT,NX,NY>>();
         auto a3_ptr = std::make_unique<matrix::Matrix2<UNIT,NX,NY>>();
         auto a4_ptr = std::make_unique<matrix::Matrix2<UNIT,NX,NY>>();
         // Initialize our k-value velocity sub-components for rk4 loop
-        auto k1_ptr = std::make_unique<matrix::Matrix2<UNIT,NX,NY>>(); 
+        auto k1_ptr = std::make_unique<matrix::Matrix2<UNIT,NX,NY>>();
         auto k2_ptr = std::make_unique<matrix::Matrix2<UNIT,NX,NY>>();
-        auto k3_ptr = std::make_unique<matrix::Matrix2<UNIT,NX,NY>>(); 
+        auto k3_ptr = std::make_unique<matrix::Matrix2<UNIT,NX,NY>>();
         auto k4_ptr = std::make_unique<matrix::Matrix2<UNIT,NX,NY>>();
 
         /*------- RK4 Term 1 -------*/
@@ -61,7 +61,7 @@ namespace rk4
         /*------- RK4 Term Sum  -------*/
         manifold::accel(t,pos,(*a4_ptr),dx,dy);
         for(int i = 1; i < NX - 1; ++i) {
-            for(int j = 1; j < NY -1; ++j) {
+            for(int j = 1; j < NY - 1; ++j) {
                 vel[t+1][i][j] = vel[t][i][j] + 
                                        (1.0/6.0) * ((*a1_ptr)[i][j] + 
                                        2 * (*a2_ptr)[i][j] + 
