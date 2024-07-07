@@ -1,3 +1,9 @@
+## Dependencies
+
+https://github.com/alandefreitas/matplotplusplus/tree/master?tab=readme-ov-file#cmake
+
+Place entire repo inside a "matplot++/" dir so cmake can add it as a subdirectory and statically link it. Follow directions in the link to set up.
+
 ## Build Steps
 ```
 mkdir build
