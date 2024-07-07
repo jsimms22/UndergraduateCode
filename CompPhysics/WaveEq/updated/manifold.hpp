@@ -1,6 +1,7 @@
 #pragma once
 // std library headers
 #include <cmath>
+#include <string>
 // project headers
 #include "matrix.hpp"   // uses std::array as container primative
 // 3rd-party libraries
@@ -83,8 +84,10 @@ namespace manifold
         }
         // build meshgrid surface plot
         matplot::mesh(X, Y, Z);
+        // save graph
+        matplot::save("img/time"+std::to_string(t_step)+".gif");
         // show last plot configured
-        matplot::show();
+        // matplot::show();
     }
 
 } // namespace manifold
