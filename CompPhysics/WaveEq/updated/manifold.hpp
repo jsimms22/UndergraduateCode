@@ -24,7 +24,7 @@ namespace manifold
 
     // initialize position matrix for manifold
     template <typename UNIT, size_t NX, size_t NY, size_t NT>
-    void init_pos(std::unique_ptr<matrix::Matrix3<UNIT,NX,NY,NT>>& pos,          // position matrix
+    void init_pos(const std::unique_ptr<matrix::Matrix3<UNIT,NX,NY,NT>>& pos,   // position matrix
                   const UNIT dx, const UNIT dy)                 // step size through space
     {
         int cx { (NX - 1) / 2 };                                // center of manifold circle
@@ -38,8 +38,7 @@ namespace manifold
                 i1 = i + cx; i2 = -i + cx;                      // index offset from the center in +/- x dir (+/- row index)
                 j1 = j + cy; j2 = -j + cy;                      // index offset from the center in +/- y dir (+/- col index)
                 r = sqrt((i*dx)*(i*dx) + (j*dy)*(j*dy));        // calculate distance from the center
-                // if the point is within our desired circle size
-                if(radius >= r) { 
+                if(radius >= r) {   // if the point is within our desired circle size
                     (*pos)[0][i1][j1] = wave_eq<UNIT>(0,i,j,dx,dy); // top right quad element
                     (*pos)[0][i1][j2] = wave_eq<UNIT>(0,i,j,dx,dy); // top left quad element
                     (*pos)[0][i2][j1] = wave_eq<UNIT>(0,i,j,dx,dy); // bottom right quad element
@@ -52,25 +51,26 @@ namespace manifold
     template <typename UNIT, size_t NX, size_t NY, size_t NT>
     // calculate acceleration components for a given time step
     void accel(const size_t t, 
-               const matrix::Matrix3<UNIT,NX,NY,NT>& pos, 
-               matrix::Matrix2<UNIT,NX,NY>& accel,
+               const std::unique_ptr<matrix::Matrix3<UNIT,NX,NY,NT>>& pos, 
+               const std::unique_ptr<matrix::Matrix2<UNIT,NX,NY>>& accel,
                const UNIT dx, const UNIT dy)
     {
         double dx2, dy2;
         for(int i = 1; i < NX - 1; i++) {
             for(int j = 1; j < NY -1; j++) {
-                dx2 = (pos[t][i+1][j] - 2 * pos[t][i][j] + pos[t][i-1][j]) / (dx * dx);
-                dy2 = (pos[t][i][j+1] - 2 * pos[t][i][j] + pos[t][i][j-1]) / (dy * dy);
-                accel[i][j] = c * c * (dx2 + dy2);
+                dx2 = ((*pos)[t][i+1][j] - 2 * (*pos)[t][i][j] + (*pos)[t][i-1][j]) / (dx * dx);
+                dy2 = ((*pos)[t][i][j+1] - 2 * (*pos)[t][i][j] + (*pos)[t][i][j-1]) / (dy * dy);
+                (*accel)[i][j] = c * c * (dx2 + dy2);
             }
         }
     }
 
     template <typename UNIT, size_t NX, size_t NY, size_t NT>
-    void plot(const std::unique_ptr<matrix::Matrix3<UNIT,NX,NY,NT>>& z_matrix, const double dx, const size_t t_step)
+    void plot(const std::unique_ptr<matrix::Matrix3<UNIT,NX,NY,NT>>& z_matrix, 
+              const double dx, const size_t t_step)
     {
         
-        // initialize our mesh grid matrices
+        // initialize our mesh grid matrices, matplot++ restricts us to doubles
         auto [X,Y] = matplot::meshgrid(matplot::iota(0.0,dx,(1.0+dx)));
         auto Z = matplot::transform(X, Y, [](double x, double y){ return 0.0; });
         // std::cout << X.size() << ", " << Y.size() << ", " << Z.size() << '\n';
@@ -89,5 +89,4 @@ namespace manifold
         // show last plot configured
         // matplot::show();
     }
-
 } // namespace manifold

@@ -32,7 +32,7 @@ int main()
     // RK4 time step loop 
     for(size_t t_step = 0; t_step < (n_steps-1); ++t_step) {
         std::cout << "time step: " << t_step << ", processing...";
-        rk4::runge_kutta_4((*z_ptr),(*vz_ptr),t_step,dt,dx,dy);
+        rk4::runge_kutta_4(z_ptr,vz_ptr,t_step,dt,dx,dy);
         std::cout << "...complete.\n";
     }
 
