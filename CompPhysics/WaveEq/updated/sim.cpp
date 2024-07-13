@@ -11,15 +11,15 @@
 int main() 
 {
     // Initializing sim values
-    constexpr size_t nx { 51 };                         // size of mesh
-    constexpr size_t ny { 51 };
-    constexpr size_t n_steps { 4001 };                  // num of time steps to traverse
-    constexpr double dx { 1.0 / (nx - 1.0) };           // mesh step size
-    constexpr double dy { 1.0 / (ny - 1.0) };
-    // time step size needs to be tweaked for various n x n grids for some reason?
-    // constexpr double dt { 1e-2 / (n_steps - 1.0) };  // time step size
-    // constexpr double dt { 1e-5 / (1.0 - dx*dy) };    
-    constexpr double dt { 1e-5 };                       // stable-ish time step for 25x25 to 101-101 mesh
+    constexpr size_t nx {51};                   // size of mesh
+    constexpr size_t ny {51};
+    constexpr size_t n_steps {1001};            // num of time steps to traverse
+    constexpr double x_side {10.0};              // length of our 2d mesh sides
+    constexpr double y_side {10.0};
+    constexpr double dx {x_side / (nx - 1.0)};  // mesh step size
+    constexpr double dy {y_side / (ny - 1.0)};
+    constexpr double cfl {0.2};                 // courant-friedrichs-lewy condition
+    constexpr double dt {cfl*(dx+dy) / 343.0};  // time step size, where speed = 343 mph
     // std::cout << dt << '\n';
 
     // Initialize position & velocity matrix pointers
@@ -38,7 +38,7 @@ int main()
 
     for(size_t t_step = 0; t_step < n_steps; ++t_step) {
         // plot a meshgrid for every xth time step
-        if ((t_step % 10) == 0) { manifold::plot(z_ptr, dx, t_step); }
+        if ((t_step % 5) == 0) { manifold::plot(z_ptr, dx, t_step, x_side); }
     }
     return 0;
 }
