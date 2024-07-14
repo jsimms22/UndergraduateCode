@@ -26,3 +26,17 @@ make
 https://people.computing.clemson.edu/~dhouse/courses/817/papers/adaptive-h-c16-2.pdf
 
 Currently having issues with grid size and time step needed to be tweaked for each other. Look into adaptive timestep calculation for desired error threshold.
+
+## Sample Output
+
+n x n mesh
+
+![](../wave_updated.gif)
+
+m x n mesh
+
+![](../wave_rec_updated.gif)
+
+m x n mesh
+
+![](../wave_larger_area_updated.gif)
