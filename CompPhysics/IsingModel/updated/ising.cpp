@@ -28,7 +28,7 @@ int main(){
     int i1, i2, j1, j2;
     double mVar, EVar;
 
-    J = 1.0; // angular momentum quantum number
+    J = 1.0; // angular momentum quantum number 
     B = 20.0; // magnetic field strength, Tesla
     muB = 5.788381e-5; // bohr mangneton, eV per Tesla
     k = 8.6173303e-5; // boltzmann's constant, eV per Kelvin
